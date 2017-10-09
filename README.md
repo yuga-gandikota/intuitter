@@ -22,13 +22,17 @@ GET /api/v1/users/{employeeId}/tweets[?page={pgeNum}]
   	 But, we can extend it to more complex authorization model. ex: allow if current user is a follower of 'employeeId'
 
 
+## Examples
 Few examples. Assuming that you are logged in as 'gauss' with password 'password'.
 
+### Example 1:
+Fetch tweet feed for user 'gauss'
 Request:
-<code>GET /api/v1/users/gauss/feed</code>
+
+GET /api/v1/users/gauss/feed
 
 Response:
-<code>
+
 [  
    {  
       "id":15,
@@ -76,15 +80,15 @@ Response:
       "time":1507964400000
    }
 ]
-</code>
 
-
+### Example 2:
+Fetch second page of tweet feed for user 'gauss'
 Request:
-<code>GET /api/v1/users/euclid/feed?page=1</code>
 
+GET /api/v1/users/euclid/feed?page=1
 
 Response:
-<code>
+
 [  
    {  
       "id":5,
@@ -132,8 +136,6 @@ Response:
       "time":1507705200000
    }
 ]
-</code>
-
 
 ## Deployment
 
@@ -144,6 +146,7 @@ This applicatin is built using [Spring Boot](https://spring.io/guides/gs/spring-
 
 * [Spring Boot](https://spring.io/guides/gs/spring-boot/) - The Spring framework used
 * [Maven](https://maven.apache.org/) - Dependency Management
+* [Forum Systems](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/) - LDAP server used for testing.
 
 ## Authors
 
