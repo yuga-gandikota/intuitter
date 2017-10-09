@@ -4,23 +4,21 @@ Twitter like implmentation for Intuit employees. This demonstation is supposed t
 
 When you run the application, it makes the following RESTful services available. You will have to be be logged in as one of the employees ('gauss', 'euclid', 'euler') to be able to access these servcies. If you access any endpoing that you are not authorized to access, application
 
+
+* Following service returns tweet feed of the current logged in user.
 ```
 GET /api/v1/feed
 ```
-  -- returns tweet feed of the current logged in user.
-  
+
+* Following service returns tweet feed for 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. This service takes an optional query string param "page". Its default value is 0. Page size is currently set to '5' (for testig purposes)
 ```
 GET /api/v1/users/{employeeId}/feed[?page={pageNum}]
 ```
-  -- returns tweet feed of the employee. Current implementation checks whether employeeId matches the current logged in user or not.
-  	 But, we can extend it to more complex authorization model. This service takes an optional query string param "page". its default value is 0.
-  	 page size is currently set to '5' (for testig purposes) 
 
+* Following service returns tweets sent by the employee with id 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. ex: allow if current user is a follower of 'employeeId'
 ```	  
 GET /api/v1/users/{employeeId}/tweets[?page={pgeNum}]
-``'
-  -- returns tweets sent by the employee with id 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not.
-  	 But, we can extend it to more complex authorization model. ex: allow if current user is a follower of 'employeeId'
+```
 
 
 ## Examples
