@@ -1,0 +1,17 @@
+<configuration debug="true" scan="true" scanPeriod="60 seconds" packagingData="false">
+  <jmxConfigurator />
+  
+  <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+  
+  <property name="LOG_PATTERN" value="%-5level [%thread] %date{ISO8601} %c{5} - %X{SESSION_ID} - %msg%n" />
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+	  <pattern>${LOG_PATTERN}</pattern>
+	</encoder>
+  </appender>
+
+  <root level="info">
+	<appender-ref ref="CONSOLE" />
+  </root>
+</configuration>
