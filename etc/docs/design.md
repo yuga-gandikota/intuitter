@@ -22,7 +22,11 @@ Based on the problem statement, following is  list of use cases that I was able 
 1. User should be able to mention other users in his/her message.
 
 
+<<<<<<< HEAD
 ![ER Diagram - Logical Model](ERDiagram-LogicalModel.png)
+=======
+![ER Diagram - Logical Model](blob/master/etc/docs/ERDiagram-LogicalModel.png)
+>>>>>>> branch 'master' of https://github.com/yuga-gandikota/intuitter.git
 
 ## Design considerations
 Based on the high level requirements and
