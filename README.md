@@ -1,8 +1,8 @@
 # Intuitter
 
-Twitter like implmentation for Intuit employees. This demonstation is supposed to be integrated into an existing LDAP server. I used [Forum System's Online LDAP Test Server](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/). It is a free read-only LDAP server. Although we can log into any account that is availbale on that server, I chose to use three names guass, euler, euclid. Password is 'password' and have setup initial data accordingly.
+Twitter like implementation for Intuit employees. This demonstration is supposed to be integrated into an existing LDAP server. I used [Forum System's Online LDAP Test Server](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/). It is a free read-only LDAP server. Although we can log into any account that is available on that server, I chose to use three names `gauss`, `euler`, `euclid`. Password is `password`. I have setup initial data for these three users.
 
-When you run the application, it makes the following RESTful services available. You will have to be be logged in as one of the employees ('gauss', 'euclid', 'euler') to be able to access these servcies. If you access any endpoing that you are not authorized to access, application
+When you run the application, it makes the following RESTful services available. You will have to be be logged in as one of the employees (`gauss`, `euclid`, `euler`) to be able to access these services. If you access any endpoint that you are not authorized to access, application
 
 
 * Following service returns tweet feed of the current logged in user.
@@ -10,16 +10,22 @@ When you run the application, it makes the following RESTful services available.
 GET /api/v1/feed
 ```
 
-* Following service returns tweet feed for 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. This service takes an optional query string param "page". Its default value is 0. Page size is currently set to '5' (for testig purposes)
+* Following service returns tweet feed for 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. This service takes an optional query string param "page". Its default value is 0. Page size is currently set to '5' (for testing purposes)
 ```
 GET /api/v1/users/{employeeId}/feed[?page={pageNum}]
 ```
 
 * Following service returns tweets sent by the employee with id 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. ex: allow if current user is a follower of 'employeeId'
 ```	  
-GET /api/v1/users/{employeeId}/tweets[?page={pgeNum}]
+GET /api/v1/users/{employeeId}/tweets[?page={pageNum}]
 ```
 
+## Assumptions
+Following assumptions were made to keep implementation and its testing simple:
+* I have set the page size for the tweet feed as 5.
+* When user status is not logged in (before first login), for first request to any of the RESTful services application redirects user to login page instead of a typical RESTful response of sending 401 error code.
+* After successful login, subsequent unauthorized requests will return 401 error code.
+* It is usually a good practice to add some unit testing. Due of time constraints I didn't add any.
 
 ## Examples
 Few examples. Assuming that you are logged in as 'gauss' with password 'password'.
@@ -144,15 +150,20 @@ Response:
 
 ## Deployment
 
-This applicatin is built using [Spring Boot](https://spring.io/guides/gs/spring-boot/). Please refer to its documentation about how to run the application.
-
+This application is built using [Spring Boot](https://spring.io/guides/gs/spring-boot/). Please refer to its documentation about how to run the application.
+*NOTE:* If you are unable to reach Forum System's LDAP server, you can skip authentication by setting the following in `application.properties`
+```
+#disable authentication/authorization check in controllers.
+skip.authorization.check=true
+```
 
 ## Built With
 
 * [Spring Boot](https://spring.io/guides/gs/spring-boot/) - The Spring framework used
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [Forum Systems](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/) - LDAP server used for testing.
+* [GitHub][https://github.com/]
 
 ## Authors
 
-* **Yuga Gandikota** - *Initial work* - [yuga-gandikota](https://github.com/yuga-gandikota)
+* **Yuga Gandikota** - *ongoing work :)* - [yuga-gandikota](https://github.com/yuga-gandikota)

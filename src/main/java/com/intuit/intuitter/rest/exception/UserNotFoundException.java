@@ -1,7 +1,6 @@
 package com.intuit.intuitter.rest.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Exception to represent "not found" case for user requests.
@@ -9,17 +8,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Yuga Gandikota
  */
 @SuppressWarnings("serial")
-@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No such User")  // 404
 public class UserNotFoundException extends BaseRestException {
 	
 	public UserNotFoundException() {
+		setStatusCode(HttpStatus.NOT_FOUND);
 	}
 	
 	public UserNotFoundException(String message) {
 		super(message);
+		setStatusCode(HttpStatus.NOT_FOUND);
 	}
 	
 	public UserNotFoundException(String message, Throwable throwable) {
 		super(message, throwable);
+		setStatusCode(HttpStatus.NOT_FOUND);
 	}
 }

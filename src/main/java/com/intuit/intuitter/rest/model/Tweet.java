@@ -65,12 +65,10 @@ public class Tweet {
 	public void setAuthor(User author) {
 		this.author = author;
 	}
-	
 	public Date getTime() {
 		return time;
 	}
 	public void setTime(Date time) {
 		this.time = time;
 	}
-
 }

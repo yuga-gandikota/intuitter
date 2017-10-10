@@ -32,4 +32,11 @@ public class Follower implements Serializable {
 	User follower;
 	
 	Date since;
+	
+	/*denotes if the relationship is active or not, false by default. set to true, when user 'unfollows' */
+	//boolean inactive;
+	
+	/*unfollowed timestamp*/
+	//Date inactiveSince;
+	
 }
