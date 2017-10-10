@@ -1,5 +1,5 @@
 # Intuitter
 
-For high level design checkout [design document](etc/docs/design.md)
+For high level design checkout [design document](design.md)
 
-For demo application checkout [demo application](etc/docs/demo.md)
+For demo application checkout [demo application](demo.md)
