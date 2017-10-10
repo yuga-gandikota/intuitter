@@ -22,7 +22,7 @@ Based on the problem statement, following is  list of use cases that I was able 
 1. User should be able to mention other users in his/her message.
 
 
-![ER Diagram - Logical Model](etc/docs/ERDiagram-LogicalModel.png)
+![ER Diagram - Logical Model](blob/master/etc/docs/ERDiagram-LogicalModel.png)
 
 ## Design considerations
 Based on the high level requirements and
