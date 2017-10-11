@@ -2,8 +2,17 @@
 
 Twitter like implementation for Intuit employees. This demonstration is supposed to be integrated into an existing LDAP server. I used [Forum System's Online LDAP Test Server](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/). It is a free read-only LDAP server. Although we can log into any account that is available on that server, I chose to use three names `gauss`, `euler`, `euclid`. Password is `password`. I have setup initial data for these three users.
 
-When you run the application, it makes the following RESTful services available. You will have to be be logged in as one of the employees (`gauss`, `euclid`, `euler`) to be able to access these services. If you access any endpoint that you are not authorized to access, application
+When you run the application, it makes the following RESTful services available. You will have to be be logged in as one of the employees (`gauss`, `euclid`, `euler`) to be able to access these services. If you access any endpoint that you are not authorized to access, application returns a `401 unauthorized` response.
 
+
+## Assumptions
+Following assumptions were made to keep implementation and its testing simple:
+* I have set the page size for the tweet feed as 5. Current implementation of pagination is very simple. For pagination to work effectively, we may have to use a reference point (like last synced time stamp or last seen tweet id or a combination of both). If the tweetId is setup to be sequential, we can probably use it as the reference point. Client app or the end client remembers the last tweet id that user has seen, and passes it along while making next fetch service call. We use that on the server side and return next 100 tweets with id > lastSeenTweetId.
+* When user status is not logged in (before first login), for first request to any of the RESTful services application redirects user to login page instead of a typical RESTful response of sending 401 error code.
+* After successful login, subsequent unauthorized requests will return 401 error code.
+* It is usually a good practice to add some unit testing. Due of time constraints I didn't add any.
+
+## Service API implemented
 
 * Following service returns tweet feed of the current logged in user.
 ```
@@ -19,14 +28,6 @@ GET /api/v1/users/{employeeId}/feed[?page={pageNum}]
 ```	  
 GET /api/v1/users/{employeeId}/tweets[?page={pageNum}]
 ```
-
-## Assumptions
-Following assumptions were made to keep implementation and its testing simple:
-* I have set the page size for the tweet feed as 5. Current implementation of pagination is very simple. For pagination to work effectively, we may have to use a reference point (like last synced time stamp or last seen tweet id or a combination of both). If the tweetId is setup to be sequential, we can probably use it as the reference point. Client app or the end client remembers the last tweet id that user has seen, and passes it along while making next fetch service call. We use that on the server side and return next 100 tweets with id > lastSeenTweetId.
-* When user status is not logged in (before first login), for first request to any of the RESTful services application redirects user to login page instead of a typical RESTful response of sending 401 error code.
-* After successful login, subsequent unauthorized requests will return 401 error code.
-* It is usually a good practice to add some unit testing. Due of time constraints I didn't add any.
-
 ## Examples
 Few examples. Assuming that you are logged in as 'gauss' with password 'password'.
 
@@ -151,7 +152,7 @@ Response:
 ## Deployment
 
 This application is built using [Spring Boot](https://spring.io/guides/gs/spring-boot/). Please refer to its documentation about how to run the application.
-*NOTE:* If you are unable to reach Forum System's LDAP server, you can skip authentication by setting the following in `application.properties`
+*NOTE:* If you are unable to reach Forum System's LDAP server (may happen when you are in corporate network), you can skip authentication by setting the following in `application.properties`
 ```
 #disable authentication/authorization check in controllers.
 skip.authorization.check=true
