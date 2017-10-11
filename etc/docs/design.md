@@ -10,184 +10,110 @@ High level requirements given are:
 * On an average, every employee will send approximately 10 messages a day to their followers
 * On the home page we need to show 100 most recent tweets. Optionally you can support pagination.
 
-## Use Cases
-Based on the problem statement, following is  list of use cases that I was able to come up with. In reality, an application like Twitter, has far more features than listed here. I'm just listing few important ones that make up minimal viable product (MVP)
+## Design
+In reality, an application like Twitter, has far more features than whats listed here. I'm just listing few important ones that I could come up with. Based on the use cases listed below, I came up with the overall design.
+
+### Use Cases
+Based on the problem statement, following is  list of use cases that I came up with.
 
 1. User should be able to authenticate using an existing LDAP server.
-1. User should be able to get feed from all the persons that he/she is following.
+1. User should be able to get feed from all other users that he/she is following.
 1. User should be able to follow another user.
 1. User should be able to un-follow a user he/she is currently following.
 1. User should be able to post a message.
-1. User should be able to upload images/videos onto the server and included its "short" URL in the message.
-1. User should be able to mention other users in his/her message.
+1. User should be able to upload images/videos onto the server and include its "short" URL in the message.
+
+###  High level components
+![High level component and the information flow](DataFlowDiagram.png)
+
+#### Security/Admin Layer
+This component takes care of making sure that user is authenticated and is authorized to access the resource / service being accessed. We can some additional features in this layer like rate limiting etc. By separating out the authentication and authorization tasks from actual request processing keeps the RESTful controllers layer simple. This layer is responsible for communicating with LDAP server for authentication. We can use framework like Spring Security for this.
+
+Future extension:
+* Since most of LDAP servers have some form to roles/groups built in them, we can utilize that feature and build some thing like `automatic following` based on the group that user belongs to. ex: employees automatically follow other employee form their organization unit (or immediate team or next level in the org tree)
+* We could also build an implementation of OAuth based on LDAP that can be used across multiple applications.
+
+#### RESTful service
+This is the component/layer that takes care of actual processing of the request and returning response. Detailed description of the API will be in the section [Services API](#Services API)
+
+#### Persistence Layer
+This layer contains model definition and data access components that help us fetch data, paginate results etc. We could use framework like Spring Data for this.
+
+#### Media Server
+Server that hosts media files like images and videos that user want to share.
+
+#### Application Data.
+This is the database that holds information about user and tweets. Since we have a relatively small user base and potentially small tweets data, we may be ok with something like a relational database like MariaDB. For a larger data size we could consider NoSQL databases like Cassandra that scale well over period of time. But this requires different data model than we generally use with relational database (denormalized, optimize for read by doing more writes, prevent fetching data from multiple nodes etc)
+
+### data model
+Data for this simplified application can be modeled(logical model) using two main entities: `User` and `Tweet`. Refer to the logical data model diagram below for relationships between these entities.
 
 
 ![ER Diagram - Logical Model](ERDiagram-LogicalModel.png)
 
-## Design considerations
-Based on the high level requirements and
+
+Following diagram shows physical data model:
+
+![Physical data model](PhysicalDataModel.png)
+
+#### User
+Represents employee. Although I have listed only two attributes in the diagram, in reality, there could be more attributes to this entity. When a user A(follower) follows user B(followee), it is represented by using `follows` relationship.
+
+#### Tweet
+Represents a message posted by a user. Although, i showed only few attributes for this entity in the diagram, we should be able to extend it to include additional attributes to represent whether is deleted, whether it is a retweet or not etc.
 
 
+### Services API
+Here are some important RESTful services. services that return list of tweets support pagination. For pagination to work effectively, we may have to use a reference point (like last synced time stamp or last seen tweet id or a combination of both). If the tweetId is setup to be sequential, we can probably use it as the reference point.
 
-* Following service returns tweet feed of the current logged in user.
+Client app or the end client remembers the last tweet id that user has seen, and passes it along while making next fetch service call. We use that on the server side and return next 100 tweets with id > lastSeenTweetId.
+
+* Authenticates a user agains LDAP server and creates user entity in the system if does not exist already. Request body has username/password
 ```
-GET /api/v1/feed
-```
-
-* Following service returns tweet feed for 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. This service takes an optional query string param "page". Its default value is 0. Page size is currently set to '5' (for testing purposes)
-```
-GET /api/v1/users/{employeeId}/feed[?page={pageNum}]
-```
-
-* Following service returns tweets sent by the employee with id 'employeeId'. Current implementation checks whether employeeId matches the current logged in user or not. But, we can extend it to more complex authorization model. ex: allow if current user is a follower of 'employeeId'
-```	  
-GET /api/v1/users/{employeeId}/tweets[?page={pageNum}]
-```
-
-## Assumptions
-Following assumptions were made to keep implementation and its testing simple:
-* I have set the page size for the tweet feed as 5.
-* When user status is not logged in (before first login), for first request to any of the RESTful services application redirects user to login page instead of a typical RESTful response of sending 401 error code.
-* After successful login, subsequent unauthorized requests will return 401 error code.
-* It is usually a good practice to add some unit testing. Due of time constraints I didn't add any.
-
-## Examples
-Few examples. Assuming that you are logged in as 'gauss' with password 'password'.
-
-### Example 1:
-Fetch tweet feed for user 'gauss'
-
-Request:
-```
-GET /api/v1/users/gauss/feed
+POST /api/v1/authenticate
 ```
 
-Response:
+* Fetches details of a user represented by **{employeeId}**
 ```
-[  
-   {  
-      "id":15,
-      "text":"Tweet message #8 from user euler",
-      "author":{  
-         "id":"euler",
-         "name":"Leonhard Euler"
-      },
-      "time":1508137200000
-   },
-   {  
-      "id":14,
-      "text":"Tweet message #7 from user euler",
-      "author":{  
-         "id":"euler",
-         "name":"Leonhard Euler"
-      },
-      "time":1508050800000
-   },
-   {  
-      "id":7,
-      "text":"Tweet message #7 from user gauss",
-      "author":{  
-         "id":"gauss",
-         "name":"Carl Gauss"
-      },
-      "time":1508050800000
-   },
-   {  
-      "id":13,
-      "text":"Tweet message #6 from user euler",
-      "author":{  
-         "id":"euler",
-         "name":"Leonhard Euler"
-      },
-      "time":1507964400000
-   },
-   {  
-      "id":6,
-      "text":"Tweet message #6 from user gauss",
-      "author":{  
-         "id":"gauss",
-         "name":"Carl Gauss"
-      },
-      "time":1507964400000
-   }
-]
+GET /api/users/{employeeId}
 ```
 
-### Example 2:
-Fetch second page of tweet feed for user 'gauss'
-
-Request:
+* Following service returns tweet feed of the user represented by **{employeeId}**
 ```
-GET /api/v1/users/euclid/feed?page=1
+GET /api/users/{employeeId}/feed[?lastSeenTweet={tweetId}&page={pageNum}]
 ```
 
-Response:
+* Gets list of tweet by a user represented by **{employeeId}**
 ```
-[  
-   {  
-      "id":5,
-      "text":"Tweet message #5 from user gauss",
-      "author":{  
-         "id":"gauss",
-         "name":"Carl Gauss"
-      },
-      "time":1507878000000
-   },
-   {  
-      "id":12,
-      "text":"Tweet message #5 from user euler",
-      "author":{  
-         "id":"euler",
-         "name":"Leonhard Euler"
-      },
-      "time":1507878000000
-   },
-   {  
-      "id":4,
-      "text":"Tweet message #4 from user gauss",
-      "author":{  
-         "id":"gauss",
-         "name":"Carl Gauss"
-      },
-      "time":1507791600000
-   },
-   {  
-      "id":11,
-      "text":"Tweet message #4 from user euler",
-      "author":{  
-         "id":"euler",
-         "name":"Leonhard Euler"
-      },
-      "time":1507791600000
-   },
-   {  
-      "id":10,
-      "text":"Tweet message #3 from user euler",
-      "author":{  
-         "id":"euler",
-         "name":"Leonhard Euler"
-      },
-      "time":1507705200000
-   }
-]
+GET /api/users/{employeeId}/tweets[?lastSeenTweet={tweetId}&page={pageNum}]
 ```
 
-## Deployment
-
-This application is built using [Spring Boot](https://spring.io/guides/gs/spring-boot/). Please refer to its documentation about how to run the application.
-*NOTE:* If you are unable to reach Forum System's LDAP server, you can skip authentication by setting the following in `application.properties`
+* Posts a message.
 ```
-#disable authentication/authorization check in controllers.
-skip.authorization.check=true
+POST /api/users/{employeeId}/tweets
 ```
 
-## Built With
+* Returns a list of followers of a user represented by **{employeeId}**
+```
+GET /api/users/{employeeId}/followers
+```
 
-* [Spring Boot](https://spring.io/guides/gs/spring-boot/) - The Spring framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [Forum Systems](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/) - LDAP server used for testing.
-* [GitHub][https://github.com/]
+* makes the `follows` relationship between **{followerId}** and **{followeeId}**
+```
+POST /api/users/{followeeId}/followers/{followerId}
+```
 
-## Authors
+* removes `follows` relationship between **{followerId}** and **{followeeId}**
+```
+DELETE /api/users/{followeeId}/followers/{followerId}
+```
 
-* **Yuga Gandikota** - *ongoing work :)* - [yuga-gandikota](https://github.com/yuga-gandikota)
+* Creates short form url for a long url and returns short url that is created.
+```
+POST /api/shorturl/
+```
+
+* returns long url given a short url.
+```
+GET /api/shorturl/{shorturl}
+```

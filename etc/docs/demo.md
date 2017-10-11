@@ -22,7 +22,7 @@ GET /api/v1/users/{employeeId}/tweets[?page={pageNum}]
 
 ## Assumptions
 Following assumptions were made to keep implementation and its testing simple:
-* I have set the page size for the tweet feed as 5.
+* I have set the page size for the tweet feed as 5. Current implementation of pagination is very simple. For pagination to work effectively, we may have to use a reference point (like last synced time stamp or last seen tweet id or a combination of both). If the tweetId is setup to be sequential, we can probably use it as the reference point. Client app or the end client remembers the last tweet id that user has seen, and passes it along while making next fetch service call. We use that on the server side and return next 100 tweets with id > lastSeenTweetId.
 * When user status is not logged in (before first login), for first request to any of the RESTful services application redirects user to login page instead of a typical RESTful response of sending 401 error code.
 * After successful login, subsequent unauthorized requests will return 401 error code.
 * It is usually a good practice to add some unit testing. Due of time constraints I didn't add any.
