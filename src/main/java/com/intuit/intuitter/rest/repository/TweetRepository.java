@@ -18,4 +18,9 @@ public interface TweetRepository extends PagingAndSortingRepository<Tweet, Long>
     /* Fetches tweet feed of a given user.*/
     @Query(value="SELECT t FROM Tweet t WHERE t.author = :follower OR t.author IN (SELECT f.followee FROM Follower f WHERE f.follower = :follower)")
     List<Tweet> findByFollower(@Param("follower") User follower, Pageable pageRequest);
+    
+    
+    /* Fetches tweet feed of a given user.*/
+    @Query(value="SELECT t FROM Tweet t WHERE t.id > :lastSeenTweetId AND (t.author = :follower OR t.author IN (SELECT f.followee FROM Follower f WHERE f.follower = :follower))")
+    List<Tweet> findByFollowerSinceLastTweetId(@Param("follower") User follower, @Param("lastSeenTweetId") Long lastSeenTweetId, Pageable pageRequest);
 }

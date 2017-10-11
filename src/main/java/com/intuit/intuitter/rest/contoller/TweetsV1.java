@@ -43,10 +43,10 @@ public class TweetsV1 extends RestBaseV1 {
 
 	
 	/**
-	 * Fetches tweet feed of the currently loggedin user
+	 * Fetches tweet feed of the currently logged-in user
 	 * 
 	 * @param employeeId, injected by spring, based on the request URI
-	 * @param pageRequest injected by Spring, pagination info is specified by the client.
+	 * @param page injected by Spring, page number requested by the client.
 	 * @param principal injected by Spring, current authenticated user info.
 	 * @return
 	 * @throws UserNotFoundException
