@@ -1,6 +1,6 @@
 # Intuitter Demo
 
-Twitter like implementation for Intuit employees. This demonstration is supposed to be integrated into an existing LDAP server. I used [Forum System's Online LDAP Test Server](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/). It is a free read-only LDAP server. Although we can log into any account that is available on that server, I chose to use three names `gauss`, `euler`, `euclid`. Password is `password`. I have setup initial data for these three users.  Refer to [schema.sql](https://github.com/yuga-gandikota/intuitter/blob/master/src/main/resources/schema.sql) and [data.sql](https://github.com/yuga-gandikota/intuitter/blob/master/src/main/resources/data.sql) for more details about initial data.
+Twitter like implementation for Intuit employees. This demonstration is supposed to be integrated into an existing LDAP server. I used [Forum System's Online LDAP Test Server](http://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/). It is a free read-only LDAP server. Although we can log into any account that is available on that server, I chose to use three names `gauss`, `euler`, `euclid`. Password is `password`. I have setup initial data for these three users.  Refer to [/src/main/resources/schema.sql](https://github.com/yuga-gandikota/intuitter/blob/master/src/main/resources/schema.sql) and [/src/main/resources/data.sql](https://github.com/yuga-gandikota/intuitter/blob/master/src/main/resources/data.sql) for more details about initial data.
 
 When you run the application, it makes the following RESTful services available. You will have to be be logged in as one of the employees (`gauss`, `euclid`, `euler`) to be able to access these services. If you access any endpoint that you are not authorized to access, application returns a `401 unauthorized` response.
 
@@ -152,7 +152,7 @@ Response:
 ## Deployment
 
 This application is built using [Spring Boot](https://spring.io/guides/gs/spring-boot/). Please refer to its documentation about how to run the application.
-*NOTE:* If you are unable to reach Forum System's LDAP server (may happen when you are in corporate network), you can skip authentication by setting the following in `application.properties`
+*NOTE:* If you are unable to reach Forum System's LDAP server (may happen when you are in corporate network), you can skip authentication by setting the following in `\src\main\resources\application.properties`
 ```
 #disable authentication/authorization check in controllers.
 skip.authorization.check=true
